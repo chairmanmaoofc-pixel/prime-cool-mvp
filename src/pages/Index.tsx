@@ -47,7 +47,7 @@ const Index = () => {
             <div className="text-primary-foreground space-y-8">
               <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
                 <Snowflake className="w-4 h-4 text-secondary" />
-                <span>FAST & RELIABLE</span>
+                <span className="text-secondary-foreground">FAST & RELIABLE</span>
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-fade-up text-secondary-foreground">
