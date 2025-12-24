@@ -85,9 +85,9 @@ const Reviews = () => {
               What Our Customers
               <span className="block mt-2 text-accent">Are Saying</span>
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 animate-fade-up" style={{
+            <p style={{
             animationDelay: "0.2s"
-          }}>
+          }} className="text-lg md:text-xl animate-fade-up text-destructive-foreground">
               Real experiences from real customers. See why hundreds trust us with their cooling needs.
             </p>
           </div>
