@@ -82,7 +82,7 @@ const Products = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-up text-sidebar-primary">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-up text-primary-foreground">
               Our Products
             </h1>
             <p style={{
