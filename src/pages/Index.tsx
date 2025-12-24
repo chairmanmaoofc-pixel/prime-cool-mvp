@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Snowflake, Wrench, Clock, Shield, Star, ArrowRight, CheckCircle2, Phone, Zap, ThermometerSnowflake, Fan, Wind } from "lucide-react";
+import { Snowflake, Wrench, Clock, Shield, Star, ArrowRight, CheckCircle2, Phone, Zap, ThermometerSnowflake, Fan, Wind, Home, Users, Leaf, Award } from "lucide-react";
 import { FadeIn, ScaleIn, StaggerContainer, StaggerItem, Parallax, Floating, HoverScale, SlideIn } from "@/components/ScrollAnimations";
 import { motion } from "framer-motion";
+import familyComfortImg from "@/assets/family-comfort.png";
+import expertInstallationImg from "@/assets/expert-installation.png";
 
 const Index = () => {
   const services = [
@@ -212,6 +214,141 @@ const Index = () => {
               </Button>
             </Link>
           </FadeIn>
+        </div>
+      </section>
+
+      {/* Family Comfort Section - Image Left, Text Right */}
+      <section className="py-24 bg-muted relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <SlideIn direction="left">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-2xl" />
+                <img 
+                  src={familyComfortImg} 
+                  alt="Family enjoying comfort with AC" 
+                  className="relative rounded-2xl shadow-elevated w-full object-cover aspect-square"
+                />
+                <div className="absolute -bottom-6 -right-6 bg-card p-4 rounded-xl shadow-lg hidden md:block">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                      <Users className="w-6 h-6 text-accent" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-card-foreground">500+</p>
+                      <p className="text-xs text-muted-foreground">Happy Families</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SlideIn>
+            
+            <SlideIn direction="right">
+              <div className="space-y-6">
+                <span className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+                  <Home className="w-4 h-4" />
+                  Home Comfort
+                </span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+                  Create the Perfect Climate for Your <span className="text-gradient">Family</span>
+                </h2>
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  Transform your living space into a haven of comfort. Our premium AC solutions ensure your family enjoys the perfect temperature year-round, creating memories in a comfortable environment.
+                </p>
+                <ul className="space-y-4">
+                  {["Whisper-quiet operation for peaceful nights", "Energy-efficient cooling saves on bills", "Smart temperature control for every room", "Healthier air with advanced filtration"].map((item, index) => (
+                    <motion.li 
+                      key={index}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="flex items-center gap-3"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
+                      <span className="text-foreground">{item}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+                <Link to="/products">
+                  <Button size="lg" className="cta-gradient text-accent-foreground gap-2 mt-4">
+                    Explore AC Units
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            </SlideIn>
+          </div>
+        </div>
+      </section>
+
+      {/* Expert Installation Section - Text Left, Image Right */}
+      <section className="py-24 bg-background relative overflow-hidden">
+        <Parallax speed={0.2} className="absolute top-20 -left-20 opacity-10">
+          <div className="w-72 h-72 rounded-full bg-secondary blur-3xl" />
+        </Parallax>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <SlideIn direction="left" className="order-2 lg:order-1">
+              <div className="space-y-6">
+                <span className="inline-flex items-center gap-2 bg-secondary/10 text-secondary px-4 py-2 rounded-full text-sm font-medium">
+                  <Award className="w-4 h-4" />
+                  Expert Service
+                </span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+                  Professional Installation You Can <span className="text-gradient">Trust</span>
+                </h2>
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  Our certified technicians deliver flawless AC installations with precision and care. From old, inefficient units to modern, energy-saving systems – we handle the complete transformation.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div className="bg-muted p-4 rounded-xl">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                      <Wrench className="w-5 h-5 text-primary" />
+                    </div>
+                    <h4 className="font-semibold text-foreground mb-1">Expert Technicians</h4>
+                    <p className="text-sm text-muted-foreground">Certified professionals with years of experience</p>
+                  </div>
+                  <div className="bg-muted p-4 rounded-xl">
+                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                      <Leaf className="w-5 h-5 text-accent" />
+                    </div>
+                    <h4 className="font-semibold text-foreground mb-1">Energy Efficient</h4>
+                    <p className="text-sm text-muted-foreground">Save money with modern, efficient systems</p>
+                  </div>
+                </div>
+                <Link to="/services">
+                  <Button size="lg" variant="outline" className="gap-2 mt-4">
+                    View Our Services
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            </SlideIn>
+            
+            <SlideIn direction="right" className="order-1 lg:order-2">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-l from-secondary/20 to-primary/20 rounded-3xl blur-2xl" />
+                <img 
+                  src={expertInstallationImg} 
+                  alt="Expert AC installation service" 
+                  className="relative rounded-2xl shadow-elevated w-full object-cover aspect-square"
+                />
+                <div className="absolute -bottom-6 -left-6 bg-card p-4 rounded-xl shadow-lg hidden md:block">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                      <Shield className="w-6 h-6 text-secondary" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-card-foreground">100%</p>
+                      <p className="text-xs text-muted-foreground">Satisfaction Guaranteed</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SlideIn>
+          </div>
         </div>
       </section>
 
