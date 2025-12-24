@@ -33,21 +33,15 @@ const Footer = () => {
               Your trusted partner for all AC and cooling solutions. We provide fast, reliable, and affordable services to keep you comfortable year-round.
             </p>
             <div className="flex gap-4">
-              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, index) => (
-                <a 
-                  key={index} 
-                  href="#" 
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors group"
-                >
+              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, index) => <a key={index} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors group">
                   <Icon className="w-5 h-5 text-white group-hover:text-accent-foreground" />
-                </a>
-              ))}
+                </a>)}
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="text-secondary-foreground">
-            <h3 className="font-semibold text-lg mb-6 bg-primary text-secondary-foreground">Quick Links</h3>
+            <h3 className="font-semibold text-lg mb-6 text-secondary-foreground bg-card-foreground">Quick Links</h3>
             <ul className="space-y-3">
               {quickLinks.map(link => <li key={link.path}>
                   <Link to={link.path} className="transition-colors text-sm text-secondary-foreground">
