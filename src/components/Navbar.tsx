@@ -4,6 +4,7 @@ import { Menu, X, Snowflake, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -93,8 +94,9 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons & Theme Toggle */}
           <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             {user ? (
               <Button
                 onClick={handleLogout}
@@ -150,6 +152,9 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="flex flex-col gap-2 mt-4 px-4">
+                <div className="flex justify-center mb-2">
+                  <ThemeToggle />
+                </div>
                 {user ? (
                   <Button
                     onClick={handleLogout}
