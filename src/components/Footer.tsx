@@ -41,7 +41,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="text-secondary-foreground">
-            <h3 className="font-semibold text-lg mb-6 text-secondary-foreground bg-card-foreground">Quick Links</h3>
+            <h3 className="font-semibold text-lg mb-6 bg-muted text-secondary-foreground">Quick Links</h3>
             <ul className="space-y-3">
               {quickLinks.map(link => <li key={link.path}>
                   <Link to={link.path} className="transition-colors text-sm text-secondary-foreground">
