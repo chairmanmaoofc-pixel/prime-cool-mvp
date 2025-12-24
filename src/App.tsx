@@ -9,6 +9,7 @@ import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
+import Reviews from "./pages/Reviews";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -28,6 +29,7 @@ const App: React.FC = () => {
               <Route path="/" element={<Layout><Index /></Layout>} />
               <Route path="/products" element={<Layout><Products /></Layout>} />
               <Route path="/services" element={<Layout><Services /></Layout>} />
+              <Route path="/reviews" element={<Layout><Reviews /></Layout>} />
               <Route path="/about" element={<Layout><About /></Layout>} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
