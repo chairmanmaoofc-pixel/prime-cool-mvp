@@ -33,9 +33,15 @@ const Footer = () => {
               Your trusted partner for all AC and cooling solutions. We provide fast, reliable, and affordable services to keep you comfortable year-round.
             </p>
             <div className="flex gap-4">
-              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, index) => <a key={index} href="#" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
-                  <Icon className="w-5 h-5 text-secondary-foreground bg-primary border-destructive-foreground" />
-                </a>)}
+              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, index) => (
+                <a 
+                  key={index} 
+                  href="#" 
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors group"
+                >
+                  <Icon className="w-5 h-5 text-white group-hover:text-accent-foreground" />
+                </a>
+              ))}
             </div>
           </div>
 
