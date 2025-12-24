@@ -64,7 +64,7 @@ const Services = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-up bg-primary-foreground text-justify text-secondary-foreground">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-up bg-primary-foreground text-justify text-primary">
               Our Services
             </h1>
             <p style={{
