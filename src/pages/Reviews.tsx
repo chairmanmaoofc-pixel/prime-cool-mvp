@@ -81,7 +81,7 @@ const Reviews = () => {
             </span>
             <h1 style={{
             animationDelay: "0.1s"
-          }} className="text-4xl md:text-6xl font-bold mb-6 animate-fade-up text-primary">
+          }} className="text-4xl font-bold mb-6 animate-fade-up text-primary md:text-7xl">
               What Our Customers
               <span className="block mt-2 text-accent">Are Saying</span>
             </h1>
