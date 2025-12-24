@@ -132,7 +132,7 @@ const Index = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-secondary font-medium text-sm uppercase tracking-wider">Our Services</span>
+            <span className="font-medium text-sm uppercase tracking-wider text-destructive-foreground">Our Services</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-4 text-foreground">
               We are the most{" "}
               <span className="text-gradient">popular repair company</span>
