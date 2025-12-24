@@ -2,7 +2,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Snowflake, Wind, Fan, Thermometer, Zap, Leaf, Star, ShoppingCart } from "lucide-react";
+import { openWhatsApp } from "@/components/WhatsAppButton";
+
 const Products = () => {
+  const handleEnquire = (product: { title: string; brand: string; price: string; features: string[] }) => {
+    const message = `Hello! I'm interested in the following product:
+
+🔹 *${product.title}*
+🏷️ Brand: ${product.brand}
+💰 Price: ${product.price}
+✨ Features: ${product.features.join(", ")}
+
+Please provide more details and availability. Thank you!`;
+    
+    openWhatsApp(message);
+  };
   const products = [{
     icon: Snowflake,
     title: "Premium Split AC - 1.5 Ton",
@@ -155,7 +169,11 @@ const Products = () => {
                           {product.originalPrice}
                         </span>
                       </div>
-                      <Button size="sm" className="cta-gradient text-accent-foreground gap-2">
+                      <Button 
+                        size="sm" 
+                        className="cta-gradient text-accent-foreground gap-2"
+                        onClick={() => handleEnquire(product)}
+                      >
                         <ShoppingCart className="w-4 h-4" />
                         Enquire
                       </Button>
