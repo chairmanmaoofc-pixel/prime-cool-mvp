@@ -112,7 +112,7 @@ const Services = () => {
       <section className="py-20 bg-muted">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-secondary font-medium text-sm uppercase tracking-wider">How It Works</span>
+            <span className="font-medium text-sm uppercase tracking-wider text-destructive-foreground">How It Works</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-4 text-foreground">
               Simple <span className="text-gradient">4-step process</span>
             </h2>
