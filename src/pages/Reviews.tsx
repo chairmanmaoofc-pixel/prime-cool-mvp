@@ -1,83 +1,74 @@
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-const reviews = [
-  {
-    id: 1,
-    name: "Ahmed Al-Rashid",
-    role: "Homeowner",
-    rating: 5,
-    content: "Exceptional service! The team installed our AC system flawlessly. The cooling is perfect and their after-sales support is outstanding.",
-    avatar: "A",
-    date: "2 weeks ago"
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    role: "Business Owner",
-    rating: 5,
-    content: "We've been using Optimus Prime for our office building. Professional, reliable, and always on time. Highly recommend their commercial solutions!",
-    avatar: "S",
-    date: "1 month ago"
-  },
-  {
-    id: 3,
-    name: "Mohammed Hassan",
-    role: "Villa Owner",
-    rating: 5,
-    content: "Best AC company in the region. Their technicians are knowledgeable and the installation was clean and efficient. Great value for money.",
-    avatar: "M",
-    date: "3 weeks ago"
-  },
-  {
-    id: 4,
-    name: "Emily Chen",
-    role: "Property Manager",
-    rating: 4,
-    content: "Managing multiple properties is easier with Optimus Prime. Their maintenance packages are comprehensive and cost-effective.",
-    avatar: "E",
-    date: "1 month ago"
-  },
-  {
-    id: 5,
-    name: "Omar Al-Farsi",
-    role: "Restaurant Owner",
-    rating: 5,
-    content: "Critical for our business - they responded within hours when our AC failed. The repair was quick and professional. Lifesavers!",
-    avatar: "O",
-    date: "2 months ago"
-  },
-  {
-    id: 6,
-    name: "Lisa Thompson",
-    role: "Homeowner",
-    rating: 5,
-    content: "From consultation to installation, everything was smooth. The energy-efficient units they recommended cut our bills by 30%!",
-    avatar: "L",
-    date: "6 weeks ago"
-  }
-];
-
-const stats = [
-  { value: "500+", label: "Happy Customers" },
-  { value: "4.9", label: "Average Rating" },
-  { value: "98%", label: "Satisfaction Rate" },
-  { value: "24/7", label: "Support Available" }
-];
-
+const reviews = [{
+  id: 1,
+  name: "Ahmed Al-Rashid",
+  role: "Homeowner",
+  rating: 5,
+  content: "Exceptional service! The team installed our AC system flawlessly. The cooling is perfect and their after-sales support is outstanding.",
+  avatar: "A",
+  date: "2 weeks ago"
+}, {
+  id: 2,
+  name: "Sarah Johnson",
+  role: "Business Owner",
+  rating: 5,
+  content: "We've been using Optimus Prime for our office building. Professional, reliable, and always on time. Highly recommend their commercial solutions!",
+  avatar: "S",
+  date: "1 month ago"
+}, {
+  id: 3,
+  name: "Mohammed Hassan",
+  role: "Villa Owner",
+  rating: 5,
+  content: "Best AC company in the region. Their technicians are knowledgeable and the installation was clean and efficient. Great value for money.",
+  avatar: "M",
+  date: "3 weeks ago"
+}, {
+  id: 4,
+  name: "Emily Chen",
+  role: "Property Manager",
+  rating: 4,
+  content: "Managing multiple properties is easier with Optimus Prime. Their maintenance packages are comprehensive and cost-effective.",
+  avatar: "E",
+  date: "1 month ago"
+}, {
+  id: 5,
+  name: "Omar Al-Farsi",
+  role: "Restaurant Owner",
+  rating: 5,
+  content: "Critical for our business - they responded within hours when our AC failed. The repair was quick and professional. Lifesavers!",
+  avatar: "O",
+  date: "2 months ago"
+}, {
+  id: 6,
+  name: "Lisa Thompson",
+  role: "Homeowner",
+  rating: 5,
+  content: "From consultation to installation, everything was smooth. The energy-efficient units they recommended cut our bills by 30%!",
+  avatar: "L",
+  date: "6 weeks ago"
+}];
+const stats = [{
+  value: "500+",
+  label: "Happy Customers"
+}, {
+  value: "4.9",
+  label: "Average Rating"
+}, {
+  value: "98%",
+  label: "Satisfaction Rate"
+}, {
+  value: "24/7",
+  label: "Support Available"
+}];
 const Reviews = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const reviewsPerPage = 3;
   const totalPages = Math.ceil(reviews.length / reviewsPerPage);
-  
-  const currentReviews = reviews.slice(
-    currentPage * reviewsPerPage,
-    (currentPage + 1) * reviewsPerPage
-  );
-
-  return (
-    <div className="min-h-screen">
+  const currentReviews = reviews.slice(currentPage * reviewsPerPage, (currentPage + 1) * reviewsPerPage);
+  return <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 hero-gradient opacity-90" />
@@ -88,11 +79,15 @@ const Reviews = () => {
             <span className="inline-block px-4 py-2 rounded-full bg-accent/20 text-accent-foreground text-sm font-medium mb-6 animate-fade-up backdrop-blur-sm border border-accent/30">
               ⭐ Customer Reviews
             </span>
-            <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+            <h1 style={{
+            animationDelay: "0.1s"
+          }} className="text-4xl md:text-6xl font-bold mb-6 animate-fade-up text-primary">
               What Our Customers
               <span className="block mt-2 text-accent">Are Saying</span>
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 animate-fade-up" style={{ animationDelay: "0.2s" }}>
+            <p className="text-lg md:text-xl text-primary-foreground/80 animate-fade-up" style={{
+            animationDelay: "0.2s"
+          }}>
               Real experiences from real customers. See why hundreds trust us with their cooling needs.
             </p>
           </div>
@@ -101,7 +96,7 @@ const Reviews = () => {
         {/* Decorative Elements */}
         <div className="absolute -bottom-1 left-0 right-0">
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" className="fill-background"/>
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" className="fill-background" />
           </svg>
         </div>
       </section>
@@ -110,20 +105,16 @@ const Reviews = () => {
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="text-center p-6 rounded-2xl glass-card border border-border/50 animate-fade-up hover:shadow-elevated transition-all duration-300"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+            {stats.map((stat, index) => <div key={index} className="text-center p-6 rounded-2xl glass-card border border-border/50 animate-fade-up hover:shadow-elevated transition-all duration-300" style={{
+            animationDelay: `${index * 0.1}s`
+          }}>
                 <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">
                   {stat.value}
                 </div>
                 <div className="text-muted-foreground text-sm">
                   {stat.label}
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -141,12 +132,9 @@ const Reviews = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {currentReviews.map((review, index) => (
-              <div
-                key={review.id}
-                className="group relative bg-card rounded-2xl p-6 shadow-soft hover:shadow-elevated transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fade-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+            {currentReviews.map((review, index) => <div key={review.id} className="group relative bg-card rounded-2xl p-6 shadow-soft hover:shadow-elevated transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fade-up" style={{
+            animationDelay: `${index * 0.1}s`
+          }}>
                 {/* Quote Icon */}
                 <div className="absolute -top-3 -right-3 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Quote className="w-5 h-5 text-primary" />
@@ -154,16 +142,9 @@ const Reviews = () => {
 
                 {/* Rating */}
                 <div className="flex gap-1 mb-4">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-4 h-4 ${
-                        i < review.rating
-                          ? "fill-accent text-accent"
-                          : "text-muted-foreground/30"
-                      }`}
-                    />
-                  ))}
+                  {Array.from({
+                length: 5
+              }).map((_, i) => <Star key={i} className={`w-4 h-4 ${i < review.rating ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />)}
                 </div>
 
                 {/* Content */}
@@ -185,41 +166,22 @@ const Reviews = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
 
           {/* Pagination */}
           <div className="flex justify-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-              disabled={currentPage === 0}
-              className="rounded-full"
-            >
+            <Button variant="outline" size="icon" onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))} disabled={currentPage === 0} className="rounded-full">
               <ChevronLeft className="w-4 h-4" />
             </Button>
             
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <Button
-                key={i}
-                variant={currentPage === i ? "default" : "outline"}
-                size="icon"
-                onClick={() => setCurrentPage(i)}
-                className={`rounded-full ${currentPage === i ? "hero-gradient" : ""}`}
-              >
+            {Array.from({
+            length: totalPages
+          }).map((_, i) => <Button key={i} variant={currentPage === i ? "default" : "outline"} size="icon" onClick={() => setCurrentPage(i)} className={`rounded-full ${currentPage === i ? "hero-gradient" : ""}`}>
                 {i + 1}
-              </Button>
-            ))}
+              </Button>)}
             
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
-              disabled={currentPage === totalPages - 1}
-              className="rounded-full"
-            >
+            <Button variant="outline" size="icon" onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))} disabled={currentPage === totalPages - 1} className="rounded-full">
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
@@ -247,8 +209,6 @@ const Reviews = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default Reviews;
