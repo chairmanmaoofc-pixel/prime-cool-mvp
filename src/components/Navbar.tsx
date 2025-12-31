@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Snowflake, LogOut } from "lucide-react";
+import { Menu, X, Snowflake, LogOut, ShoppingCart, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -99,15 +99,28 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
             {user ? (
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
+              <>
+                <Link to="/cart" className="relative">
+                  <Button variant="ghost" size="icon">
+                    <ShoppingCart className="w-5 h-5" />
+                  </Button>
+                </Link>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full">
+                  <UserIcon className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">
+                    {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
+                  </span>
+                </div>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              </>
             ) : (
               <>
                 <Link to="/login">
@@ -157,14 +170,28 @@ const Navbar = () => {
                   <ThemeToggle />
                 </div>
                 {user ? (
-                  <Button
-                    onClick={handleLogout}
-                    variant="outline"
-                    className="w-full gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                  </Button>
+                  <>
+                    <div className="flex items-center justify-center gap-2 px-3 py-2 bg-primary/10 rounded-lg mb-2">
+                      <UserIcon className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium text-primary">
+                        {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
+                      </span>
+                    </div>
+                    <Link to="/cart" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full gap-2">
+                        <ShoppingCart className="w-4 h-4" />
+                        Cart
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={handleLogout}
+                      variant="outline"
+                      className="w-full gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Link to="/login" onClick={() => setIsOpen(false)}>

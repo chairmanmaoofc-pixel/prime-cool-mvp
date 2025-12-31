@@ -1,10 +1,71 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Snowflake, Wind, Fan, Thermometer, Zap, Leaf, Star, ShoppingCart } from "lucide-react";
+import { Snowflake, Wind, Fan, Thermometer, Zap, Leaf, Star, ShoppingCart, MessageCircle } from "lucide-react";
 import { openWhatsApp } from "@/components/WhatsAppButton";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import acUnitImage from "@/assets/ac-unit.png";
 
 const Products = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleAuthAction = (product: any, action: 'cart' | 'enquire') => {
+    if (!user) {
+      toast.info("Please sign in to continue");
+      navigate("/login?redirect=/cart");
+      return;
+    }
+
+    if (action === 'cart') {
+      addToCart(product);
+    } else {
+      addToCart(product);
+      handleEnquire(product);
+    }
+  };
+
+  const addToCart = (product: any) => {
+    const cartItem = {
+      id: `${product.title}-${product.brand}`,
+      title: product.title,
+      brand: product.brand,
+      price: product.price,
+      features: product.features
+    };
+
+    const savedCart = localStorage.getItem("cart");
+    const cart = savedCart ? JSON.parse(savedCart) : [];
+    
+    const existingIndex = cart.findIndex((item: any) => item.id === cartItem.id);
+    if (existingIndex === -1) {
+      cart.push(cartItem);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      toast.success("Added to cart!");
+    } else {
+      toast.info("Item already in cart");
+    }
+    
+    navigate("/cart");
+  };
+
   const handleEnquire = (product: { title: string; brand: string; price: string; features: string[] }) => {
     const message = `Hello! I'm interested in the following product:
 
@@ -17,6 +78,7 @@ Please provide more details and availability. Thank you!`;
     
     openWhatsApp(message);
   };
+
   const products = [{
     icon: Snowflake,
     title: "Premium Split AC - 1.5 Ton",
@@ -76,6 +138,7 @@ Please provide more details and availability. Thank you!`;
     badge: "Value Pick",
     rating: 4.4
   }];
+
   const features = [{
     icon: Zap,
     title: "Energy Efficient",
@@ -134,9 +197,13 @@ Please provide more details and availability. Thank you!`;
             animationDelay: `${index * 100}ms`
           }}>
                 <CardContent className="p-0">
-                  {/* Product Image Placeholder */}
-                  <div className="h-48 bg-muted relative flex items-center justify-center">
-                    <product.icon className="w-20 h-20 text-secondary/30 group-hover:text-secondary/50 transition-colors" />
+                  {/* Product Image */}
+                  <div className="h-48 bg-muted relative flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={acUnitImage} 
+                      alt={product.title}
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                    />
                     {product.badge && <Badge className="absolute top-4 left-4 cta-gradient text-accent-foreground">
                         {product.badge}
                       </Badge>}
@@ -162,21 +229,34 @@ Please provide more details and availability. Thank you!`;
                         </Badge>)}
                     </div>
                     
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-xl font-bold text-card-foreground">{product.price}</span>
-                        <span className="text-sm text-muted-foreground line-through ml-2">
-                          {product.originalPrice}
-                        </span>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xl font-bold text-card-foreground">{product.price}</span>
+                          <span className="text-sm text-muted-foreground line-through ml-2">
+                            {product.originalPrice}
+                          </span>
+                        </div>
                       </div>
-                      <Button 
-                        size="sm" 
-                        className="cta-gradient text-accent-foreground gap-2"
-                        onClick={() => handleEnquire(product)}
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        Enquire
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="flex-1 gap-2"
+                          onClick={() => handleAuthAction(product, 'cart')}
+                        >
+                          <ShoppingCart className="w-4 h-4" />
+                          Add to Cart
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          className="flex-1 cta-gradient text-accent-foreground gap-2"
+                          onClick={() => handleAuthAction(product, 'enquire')}
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          Enquire
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

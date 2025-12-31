@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Snowflake, Mail, Lock, Eye, EyeOff, Loader2, User } from "lucide-react";
@@ -26,16 +26,18 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/");
+        navigate(redirectTo);
       }
     };
     checkAuth();
-  }, [navigate]);
+  }, [navigate, redirectTo]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +50,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}${redirectTo}`;
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -69,7 +71,7 @@ const Signup = () => {
         }
       } else {
         toast.success("Account created successfully! Welcome to Optimus Prime.");
-        navigate("/");
+        navigate(redirectTo);
       }
     } catch (error) {
       toast.error("An unexpected error occurred. Please try again.");
