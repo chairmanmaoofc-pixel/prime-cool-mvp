@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Trash2, MessageCircle, ArrowLeft } from "lucide-react";
 import { openWhatsApp } from "@/components/WhatsAppButton";
+import { toast } from "sonner";
 import acUnitImage from "@/assets/ac-unit.png";
 
 interface CartItem {
   id: string;
+  product_id: string;
   title: string;
   brand: string;
   price: string;
@@ -21,28 +23,37 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/login?redirect=/cart");
-        return;
-      }
-      
-      // Load cart from localStorage
-      const savedCart = localStorage.getItem("cart");
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      }
-      setLoading(false);
-    };
+  const fetchCartItems = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login?redirect=/cart");
+      return;
+    }
 
-    checkAuth();
+    const { data, error } = await supabase
+      .from("cart_items")
+      .select("*")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching cart:", error);
+      toast.error("Failed to load cart items");
+    } else {
+      setCartItems(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCartItems();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (!session) {
           navigate("/login?redirect=/cart");
+        } else {
+          fetchCartItems();
         }
       }
     );
@@ -50,10 +61,19 @@ const Cart = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const removeFromCart = (id: string) => {
-    const updatedCart = cartItems.filter(item => item.id !== id);
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  const removeFromCart = async (id: string) => {
+    const { error } = await supabase
+      .from("cart_items")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error removing item:", error);
+      toast.error("Failed to remove item");
+    } else {
+      setCartItems(prev => prev.filter(item => item.id !== id));
+      toast.success("Item removed from cart");
+    }
   };
 
   const handleEnquireAll = () => {

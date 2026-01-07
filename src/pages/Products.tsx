@@ -33,42 +33,49 @@ const Products = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleAuthAction = (product: any, action: 'cart' | 'enquire') => {
+  const handleAuthAction = async (product: any, action: 'cart' | 'enquire') => {
     if (!user) {
       toast.info("Please sign in to continue");
       navigate("/login?redirect=/cart");
       return;
     }
 
-    if (action === 'cart') {
-      addToCart(product);
-    } else {
-      addToCart(product);
+    await addToCart(product);
+    
+    if (action === 'enquire') {
       handleEnquire(product);
     }
   };
 
-  const addToCart = (product: any) => {
-    const cartItem = {
-      id: `${product.title}-${product.brand}`,
-      title: product.title,
-      brand: product.brand,
-      price: product.price,
-      features: product.features
-    };
-
-    const savedCart = localStorage.getItem("cart");
-    const cart = savedCart ? JSON.parse(savedCart) : [];
-    
-    const existingIndex = cart.findIndex((item: any) => item.id === cartItem.id);
-    if (existingIndex === -1) {
-      cart.push(cartItem);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      toast.success("Added to cart!");
-    } else {
-      toast.info("Item already in cart");
+  const addToCart = async (product: any) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login?redirect=/cart");
+      return;
     }
-    
+
+    const productId = `${product.title}-${product.brand}`;
+
+    const { error } = await supabase
+      .from("cart_items")
+      .upsert({
+        user_id: session.user.id,
+        product_id: productId,
+        title: product.title,
+        brand: product.brand,
+        price: product.price,
+        features: product.features
+      }, {
+        onConflict: 'user_id,product_id'
+      });
+
+    if (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add to cart");
+      return;
+    }
+
+    toast.success("Added to cart!");
     navigate("/cart");
   };
 
