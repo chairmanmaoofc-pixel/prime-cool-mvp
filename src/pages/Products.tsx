@@ -54,19 +54,31 @@ const Products = () => {
       return;
     }
 
-    const productId = `${product.title}-${product.brand}`;
+    const productId = `${product.title}-${product.brand}`.replace(/\s+/g, '-').toLowerCase();
+
+    // First try to check if item exists
+    const { data: existingItem } = await supabase
+      .from("cart_items")
+      .select("id")
+      .eq("user_id", session.user.id)
+      .eq("product_id", productId)
+      .maybeSingle();
+
+    if (existingItem) {
+      toast.info("Item already in cart!");
+      navigate("/cart");
+      return;
+    }
 
     const { error } = await supabase
       .from("cart_items")
-      .upsert({
+      .insert({
         user_id: session.user.id,
         product_id: productId,
         title: product.title,
         brand: product.brand,
         price: product.price,
         features: product.features
-      }, {
-        onConflict: 'user_id,product_id'
       });
 
     if (error) {
@@ -255,15 +267,17 @@ Please provide more details and availability. Thank you!`;
       <section className="py-12 bg-card border-b border-border">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
-            {highlightFeatures.map((feature, index) => <div key={index} className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-                  <feature.icon className="w-6 h-6 text-secondary" />
+            {highlightFeatures.map((feature, index) => (
+              <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-muted/50 dark:bg-muted/20 hover:bg-muted dark:hover:bg-muted/30 transition-colors">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <feature.icon className="w-6 h-6 text-primary dark:text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-card-foreground mb-1">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </div>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -297,15 +311,15 @@ Please provide more details and availability. Thank you!`;
 
             {/* Filters Sidebar */}
             <aside className={`lg:w-72 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-              <Card className="sticky top-24">
+              <Card className="sticky top-24 border-border/50 dark:border-border shadow-soft dark:shadow-elevated">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="font-semibold text-lg text-card-foreground flex items-center gap-2">
-                      <Filter className="w-5 h-5" />
+                      <Filter className="w-5 h-5 text-primary" />
                       Filters
                     </h3>
                     {hasActiveFilters && (
-                      <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs text-muted-foreground">
+                      <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs text-destructive hover:text-destructive">
                         Clear all
                       </Button>
                     )}
@@ -322,9 +336,9 @@ Please provide more details and availability. Thank you!`;
                       step={10000}
                       className="mb-4"
                     />
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>PKR {priceRange[0].toLocaleString()}</span>
-                      <span>PKR {priceRange[1].toLocaleString()}</span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="px-2 py-1 rounded-md bg-muted text-muted-foreground">PKR {priceRange[0].toLocaleString()}</span>
+                      <span className="px-2 py-1 rounded-md bg-muted text-muted-foreground">PKR {priceRange[1].toLocaleString()}</span>
                     </div>
                   </div>
 
@@ -333,15 +347,16 @@ Please provide more details and availability. Thank you!`;
                     <h4 className="font-medium text-card-foreground mb-4">Features</h4>
                     <div className="space-y-3">
                       {allFeatures.map((feature) => (
-                        <div key={feature} className="flex items-center space-x-3">
+                        <div key={feature} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
                           <Checkbox
                             id={feature}
                             checked={selectedFeatures.includes(feature)}
                             onCheckedChange={() => toggleFeature(feature)}
+                            className="border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
                           <label
                             htmlFor={feature}
-                            className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                            className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors flex-1"
                           >
                             {feature}
                           </label>
@@ -374,46 +389,57 @@ Please provide more details and availability. Thank you!`;
                 </Card>
               ) : (
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredProducts.map((product, index) => <Card key={index} className="group hover:shadow-elevated transition-all duration-300 overflow-hidden animate-fade-up" style={{
-                  animationDelay: `${index * 100}ms`
-                }}>
+                  {filteredProducts.map((product, index) => (
+                    <Card 
+                      key={index} 
+                      className="group hover:shadow-elevated transition-all duration-300 overflow-hidden animate-fade-up border-border/50 dark:border-border dark:hover:border-primary/30" 
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
                       <CardContent className="p-0">
                         {/* Product Image */}
-                        <div className="h-48 bg-muted relative flex items-center justify-center overflow-hidden">
+                        <div className="h-48 bg-gradient-to-br from-muted to-muted/50 dark:from-muted/30 dark:to-muted/10 relative flex items-center justify-center overflow-hidden">
                           <img 
                             src={acUnitImage} 
                             alt={product.title}
                             className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                           />
-                          {product.badge && <Badge className="absolute top-4 left-4 cta-gradient text-accent-foreground">
+                          {product.badge && (
+                            <Badge className="absolute top-4 left-4 cta-gradient text-accent-foreground shadow-lg">
                               {product.badge}
-                            </Badge>}
+                            </Badge>
+                          )}
                         </div>
                         
-                        <div className="p-6">
+                        <div className="p-6 bg-card">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-medium text-secondary uppercase tracking-wider">
+                            <span className="text-xs font-semibold text-primary uppercase tracking-wider">
                               {product.brand}
                             </span>
-                            <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 text-accent fill-accent" />
-                              <span className="text-sm font-medium">{product.rating}</span>
+                            <div className="flex items-center gap-1 bg-accent/10 dark:bg-accent/20 px-2 py-1 rounded-full">
+                              <Star className="w-3.5 h-3.5 text-accent fill-accent" />
+                              <span className="text-xs font-semibold text-accent">{product.rating}</span>
                             </div>
                           </div>
                           
                           <h3 className="text-lg font-semibold mb-2 text-card-foreground">{product.title}</h3>
-                          <p className="text-sm text-muted-foreground mb-4">{product.description}</p>
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
                           
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {product.features.map((feature, fIndex) => <Badge key={fIndex} variant="secondary" className="text-xs">
+                          <div className="flex flex-wrap gap-1.5 mb-4">
+                            {product.features.map((feature, fIndex) => (
+                              <Badge 
+                                key={fIndex} 
+                                variant="secondary" 
+                                className="text-xs bg-secondary/10 dark:bg-secondary/20 text-secondary-foreground dark:text-foreground border-0"
+                              >
                                 {feature}
-                              </Badge>)}
+                              </Badge>
+                            ))}
                           </div>
                           
                           <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 dark:bg-muted/20">
                               <div>
-                                <span className="text-xl font-bold text-card-foreground">{product.price}</span>
+                                <span className="text-xl font-bold text-foreground">{product.price}</span>
                                 <span className="text-sm text-muted-foreground line-through ml-2">
                                   {product.originalPrice}
                                 </span>
@@ -423,7 +449,7 @@ Please provide more details and availability. Thank you!`;
                               <Button 
                                 size="sm" 
                                 variant="outline"
-                                className="flex-1 gap-2"
+                                className="flex-1 gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary dark:border-primary/50 dark:hover:bg-primary/20"
                                 onClick={() => handleAuthAction(product, 'cart')}
                               >
                                 <ShoppingCart className="w-4 h-4" />
@@ -431,7 +457,7 @@ Please provide more details and availability. Thank you!`;
                               </Button>
                               <Button 
                                 size="sm" 
-                                className="flex-1 cta-gradient text-accent-foreground gap-2"
+                                className="flex-1 cta-gradient text-accent-foreground gap-2 shadow-md hover:shadow-lg transition-shadow"
                                 onClick={() => handleAuthAction(product, 'enquire')}
                               >
                                 <MessageCircle className="w-4 h-4" />
@@ -441,7 +467,8 @@ Please provide more details and availability. Thank you!`;
                           </div>
                         </div>
                       </CardContent>
-                    </Card>)}
+                    </Card>
+                  ))}
                 </div>
               )}
             </div>
