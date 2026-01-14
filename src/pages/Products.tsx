@@ -6,18 +6,20 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Snowflake, Wind, Fan, Thermometer, Zap, Leaf, Star, ShoppingCart, MessageCircle, Filter, X, HelpCircle } from "lucide-react";
+import { Snowflake, Wind, Fan, Thermometer, Zap, Leaf, Star, ShoppingCart, MessageCircle, Filter, X, HelpCircle, Check } from "lucide-react";
 import { openWhatsApp } from "@/components/WhatsAppButton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import acUnitImage from "@/assets/ac-unit.png";
+import { User } from "@supabase/supabase-js";
 
 const Products = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [addingToCart, setAddingToCart] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,62 +35,67 @@ const Products = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleAuthAction = async (product: any, action: 'cart' | 'enquire') => {
-    if (!user) {
-      toast.info("Please sign in to continue");
-      navigate("/login?redirect=/cart");
-      return;
-    }
-
-    await addToCart(product);
-    
-    if (action === 'enquire') {
-      handleEnquire(product);
-    }
-  };
-
   const addToCart = async (product: any) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/login?redirect=/cart");
-      return;
-    }
-
     const productId = `${product.title}-${product.brand}`.replace(/\s+/g, '-').toLowerCase();
+    setAddingToCart(productId);
 
-    // First try to check if item exists
-    const { data: existingItem } = await supabase
-      .from("cart_items")
-      .select("id")
-      .eq("user_id", session.user.id)
-      .eq("product_id", productId)
-      .maybeSingle();
+    try {
+      // Get fresh session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        toast.info("Please sign in to add items to cart");
+        navigate("/login?redirect=/products");
+        return;
+      }
 
-    if (existingItem) {
-      toast.info("Item already in cart!");
-      navigate("/cart");
-      return;
-    }
+      // Check if item already exists
+      const { data: existingItem, error: checkError } = await supabase
+        .from("cart_items")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .eq("product_id", productId)
+        .maybeSingle();
 
-    const { error } = await supabase
-      .from("cart_items")
-      .insert({
-        user_id: session.user.id,
-        product_id: productId,
-        title: product.title,
-        brand: product.brand,
-        price: product.price,
-        features: product.features
+      if (checkError) {
+        console.error("Error checking cart:", checkError);
+        toast.error("Something went wrong. Please try again.");
+        return;
+      }
+
+      if (existingItem) {
+        toast.info("Item already in cart!");
+        navigate("/cart");
+        return;
+      }
+
+      // Insert new item
+      const { error: insertError } = await supabase
+        .from("cart_items")
+        .insert({
+          user_id: session.user.id,
+          product_id: productId,
+          title: product.title,
+          brand: product.brand,
+          price: product.price,
+          features: product.features
+        });
+
+      if (insertError) {
+        console.error("Error adding to cart:", insertError);
+        toast.error("Failed to add to cart. Please try again.");
+        return;
+      }
+
+      toast.success("Added to cart!", {
+        action: {
+          label: "View Cart",
+          onClick: () => navigate("/cart")
+        }
       });
-
-    if (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("Failed to add to cart");
-      return;
+    } finally {
+      setAddingToCart(null);
     }
-
-    toast.success("Added to cart!");
-    navigate("/cart");
   };
 
   const handleEnquire = (product: { title: string; brand: string; price: string; features: string[] }) => {
@@ -102,6 +109,15 @@ const Products = () => {
 Please provide more details and availability. Thank you!`;
     
     openWhatsApp(message);
+  };
+
+  const handleAddToCart = async (product: any) => {
+    if (!user) {
+      toast.info("Please sign in to continue");
+      navigate("/login?redirect=/products");
+      return;
+    }
+    await addToCart(product);
   };
 
   const products = [{
@@ -243,19 +259,18 @@ Please provide more details and availability. Thank you!`;
     }
   ];
 
-  return <div className="min-h-screen">
+  return (
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="py-20 hero-gradient relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40" />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-up text-primary-foreground">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-up">
               Our Products
             </h1>
-            <p style={{
-            animationDelay: "100ms"
-          }} className="text-lg animate-fade-up text-slate-400">
+            <p style={{ animationDelay: "100ms" }} className="text-lg md:text-xl animate-fade-up opacity-90">
               Discover our range of premium air conditioning units from top brands.
               Quality cooling solutions for every budget.
             </p>
@@ -264,17 +279,20 @@ Please provide more details and availability. Thank you!`;
       </section>
 
       {/* Features Bar */}
-      <section className="py-12 bg-card border-b border-border">
+      <section className="py-12 bg-card border-b border-border/50">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {highlightFeatures.map((feature, index) => (
-              <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-muted/50 dark:bg-muted/20 hover:bg-muted dark:hover:bg-muted/30 transition-colors">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center flex-shrink-0">
-                  <feature.icon className="w-6 h-6 text-primary dark:text-primary" />
+              <div 
+                key={index} 
+                className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-muted/80 to-muted/40 dark:from-muted/30 dark:to-muted/10 border border-border/50 hover:border-primary/30 hover-glow transition-all duration-300"
+              >
+                <div className="w-14 h-14 rounded-xl hero-gradient flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <feature.icon className="w-7 h-7 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-card-foreground mb-1">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  <h3 className="font-semibold text-lg text-foreground mb-1">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               </div>
             ))}
@@ -283,7 +301,7 @@ Please provide more details and availability. Thank you!`;
       </section>
 
       {/* Products Grid with Filters */}
-      <section className="py-20 bg-background">
+      <section className="py-20 mesh-gradient">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Mobile Filter Toggle */}
@@ -291,18 +309,18 @@ Please provide more details and availability. Thank you!`;
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="gap-2"
+                className="gap-2 border-border/60 hover:border-primary/50"
               >
                 <Filter className="w-4 h-4" />
                 Filters
                 {hasActiveFilters && (
-                  <Badge variant="secondary" className="ml-1">
+                  <Badge variant="secondary" className="ml-1 bg-primary/20 text-primary">
                     {selectedFeatures.length + (priceRange[0] > 0 || priceRange[1] < 500000 ? 1 : 0)}
                   </Badge>
                 )}
               </Button>
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1 text-muted-foreground">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1 text-muted-foreground hover:text-destructive">
                   <X className="w-4 h-4" />
                   Clear all
                 </Button>
@@ -311,15 +329,17 @@ Please provide more details and availability. Thank you!`;
 
             {/* Filters Sidebar */}
             <aside className={`lg:w-72 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-              <Card className="sticky top-24 border-border/50 dark:border-border shadow-soft dark:shadow-elevated">
+              <Card className="sticky top-24 glass-card shadow-elevated overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-semibold text-lg text-card-foreground flex items-center gap-2">
-                      <Filter className="w-5 h-5 text-primary" />
+                    <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg hero-gradient flex items-center justify-center">
+                        <Filter className="w-4 h-4 text-primary-foreground" />
+                      </div>
                       Filters
                     </h3>
                     {hasActiveFilters && (
-                      <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs text-destructive hover:text-destructive">
+                      <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10">
                         Clear all
                       </Button>
                     )}
@@ -327,7 +347,10 @@ Please provide more details and availability. Thank you!`;
 
                   {/* Price Range Filter */}
                   <div className="mb-8">
-                    <h4 className="font-medium text-card-foreground mb-4">Price Range</h4>
+                    <h4 className="font-medium text-foreground mb-4 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-primary" />
+                      Price Range
+                    </h4>
                     <Slider
                       value={priceRange}
                       onValueChange={(value) => setPriceRange(value as [number, number])}
@@ -336,27 +359,43 @@ Please provide more details and availability. Thank you!`;
                       step={10000}
                       className="mb-4"
                     />
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="px-2 py-1 rounded-md bg-muted text-muted-foreground">PKR {priceRange[0].toLocaleString()}</span>
-                      <span className="px-2 py-1 rounded-md bg-muted text-muted-foreground">PKR {priceRange[1].toLocaleString()}</span>
+                    <div className="flex items-center justify-between text-sm gap-2">
+                      <span className="px-3 py-1.5 rounded-lg bg-muted text-muted-foreground font-medium">
+                        PKR {priceRange[0].toLocaleString()}
+                      </span>
+                      <span className="text-muted-foreground">—</span>
+                      <span className="px-3 py-1.5 rounded-lg bg-muted text-muted-foreground font-medium">
+                        PKR {priceRange[1].toLocaleString()}
+                      </span>
                     </div>
                   </div>
 
                   {/* Features Filter */}
                   <div>
-                    <h4 className="font-medium text-card-foreground mb-4">Features</h4>
-                    <div className="space-y-3">
+                    <h4 className="font-medium text-foreground mb-4 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-accent" />
+                      Features
+                    </h4>
+                    <div className="space-y-2">
                       {allFeatures.map((feature) => (
-                        <div key={feature} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div 
+                          key={feature} 
+                          className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+                            selectedFeatures.includes(feature)
+                              ? 'bg-primary/10 dark:bg-primary/20 border border-primary/30'
+                              : 'hover:bg-muted/60 border border-transparent'
+                          }`}
+                          onClick={() => toggleFeature(feature)}
+                        >
                           <Checkbox
                             id={feature}
                             checked={selectedFeatures.includes(feature)}
                             onCheckedChange={() => toggleFeature(feature)}
-                            className="border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                            className="border-muted-foreground/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
                           <label
                             htmlFor={feature}
-                            className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors flex-1"
+                            className="text-sm text-foreground cursor-pointer flex-1"
                           >
                             {feature}
                           </label>
@@ -370,105 +409,122 @@ Please provide more details and availability. Thank you!`;
 
             {/* Products Grid */}
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-8">
                 <p className="text-muted-foreground">
-                  Showing <span className="font-medium text-foreground">{filteredProducts.length}</span> of {products.length} products
+                  Showing <span className="font-semibold text-foreground">{filteredProducts.length}</span> of {products.length} products
                 </p>
               </div>
 
               {filteredProducts.length === 0 ? (
-                <Card className="p-12 text-center">
+                <Card className="p-16 text-center glass-card">
                   <div className="text-muted-foreground">
-                    <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium mb-2 text-foreground">No products found</h3>
-                    <p className="mb-4">Try adjusting your filters to see more results.</p>
-                    <Button onClick={clearFilters} variant="outline">
+                    <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
+                      <Filter className="w-10 h-10 opacity-50" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3 text-foreground">No products found</h3>
+                    <p className="mb-6">Try adjusting your filters to see more results.</p>
+                    <Button onClick={clearFilters} className="cta-gradient text-accent-foreground">
                       Clear Filters
                     </Button>
                   </div>
                 </Card>
               ) : (
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredProducts.map((product, index) => (
-                    <Card 
-                      key={index} 
-                      className="group hover:shadow-elevated transition-all duration-300 overflow-hidden animate-fade-up border-border/50 dark:border-border dark:hover:border-primary/30" 
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <CardContent className="p-0">
-                        {/* Product Image */}
-                        <div className="h-48 bg-gradient-to-br from-muted to-muted/50 dark:from-muted/30 dark:to-muted/10 relative flex items-center justify-center overflow-hidden">
-                          <img 
-                            src={acUnitImage} 
-                            alt={product.title}
-                            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                          />
-                          {product.badge && (
-                            <Badge className="absolute top-4 left-4 cta-gradient text-accent-foreground shadow-lg">
-                              {product.badge}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="p-6 bg-card">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-semibold text-primary uppercase tracking-wider">
-                              {product.brand}
-                            </span>
-                            <div className="flex items-center gap-1 bg-accent/10 dark:bg-accent/20 px-2 py-1 rounded-full">
-                              <Star className="w-3.5 h-3.5 text-accent fill-accent" />
-                              <span className="text-xs font-semibold text-accent">{product.rating}</span>
-                            </div>
-                          </div>
-                          
-                          <h3 className="text-lg font-semibold mb-2 text-card-foreground">{product.title}</h3>
-                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                          
-                          <div className="flex flex-wrap gap-1.5 mb-4">
-                            {product.features.map((feature, fIndex) => (
-                              <Badge 
-                                key={fIndex} 
-                                variant="secondary" 
-                                className="text-xs bg-secondary/10 dark:bg-secondary/20 text-secondary-foreground dark:text-foreground border-0"
-                              >
-                                {feature}
+                  {filteredProducts.map((product, index) => {
+                    const productId = `${product.title}-${product.brand}`.replace(/\s+/g, '-').toLowerCase();
+                    const isAdding = addingToCart === productId;
+                    
+                    return (
+                      <Card 
+                        key={index} 
+                        className="group hover:shadow-elevated transition-all duration-500 overflow-hidden glass-card hover:border-primary/30 gradient-border animate-fade-up" 
+                        style={{ animationDelay: `${index * 80}ms` }}
+                      >
+                        <CardContent className="p-0">
+                          {/* Product Image */}
+                          <div className="h-52 bg-gradient-to-br from-muted via-muted/80 to-muted/50 dark:from-muted/40 dark:via-muted/20 dark:to-transparent relative flex items-center justify-center overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
+                            <img 
+                              src={acUnitImage} 
+                              alt={product.title}
+                              className="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-500"
+                            />
+                            {product.badge && (
+                              <Badge className="absolute top-4 left-4 cta-gradient text-accent-foreground shadow-lg border-0 px-3 py-1">
+                                {product.badge}
                               </Badge>
-                            ))}
+                            )}
                           </div>
                           
-                          <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 dark:bg-muted/20">
-                              <div>
-                                <span className="text-xl font-bold text-foreground">{product.price}</span>
-                                <span className="text-sm text-muted-foreground line-through ml-2">
-                                  {product.originalPrice}
-                                </span>
+                          <div className="p-6">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-xs font-bold text-primary uppercase tracking-widest">
+                                {product.brand}
+                              </span>
+                              <div className="flex items-center gap-1.5 bg-accent/15 dark:bg-accent/25 px-2.5 py-1 rounded-full">
+                                <Star className="w-3.5 h-3.5 text-accent fill-accent" />
+                                <span className="text-xs font-bold text-accent">{product.rating}</span>
                               </div>
                             </div>
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                className="flex-1 gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary dark:border-primary/50 dark:hover:bg-primary/20"
-                                onClick={() => handleAuthAction(product, 'cart')}
-                              >
-                                <ShoppingCart className="w-4 h-4" />
-                                Add to Cart
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                className="flex-1 cta-gradient text-accent-foreground gap-2 shadow-md hover:shadow-lg transition-shadow"
-                                onClick={() => handleAuthAction(product, 'enquire')}
-                              >
-                                <MessageCircle className="w-4 h-4" />
-                                Enquire
-                              </Button>
+                            
+                            <h3 className="text-lg font-bold mb-2 text-foreground group-hover:text-primary transition-colors">
+                              {product.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                              {product.description}
+                            </p>
+                            
+                            <div className="flex flex-wrap gap-1.5 mb-5">
+                              {product.features.map((feature, fIndex) => (
+                                <Badge 
+                                  key={fIndex} 
+                                  variant="secondary" 
+                                  className="text-xs bg-secondary/15 dark:bg-secondary/25 text-foreground border-0 font-medium"
+                                >
+                                  {feature}
+                                </Badge>
+                              ))}
+                            </div>
+                            
+                            <div className="flex flex-col gap-4">
+                              <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-muted/80 to-muted/40 dark:from-muted/30 dark:to-muted/10 border border-border/30">
+                                <div>
+                                  <span className="text-2xl font-bold text-foreground">{product.price}</span>
+                                  <span className="text-sm text-muted-foreground line-through ml-2">
+                                    {product.originalPrice}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex gap-3">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  disabled={isAdding}
+                                  className="flex-1 gap-2 h-11 border-primary/40 hover:bg-primary/10 hover:border-primary dark:border-primary/50 dark:hover:bg-primary/20 font-medium transition-all duration-300"
+                                  onClick={() => handleAddToCart(product)}
+                                >
+                                  {isAdding ? (
+                                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                                  ) : (
+                                    <ShoppingCart className="w-4 h-4" />
+                                  )}
+                                  {isAdding ? "Adding..." : "Add to Cart"}
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  className="flex-1 cta-gradient text-accent-foreground gap-2 h-11 shadow-lg hover:shadow-xl transition-all duration-300 btn-premium font-medium"
+                                  onClick={() => handleEnquire(product)}
+                                >
+                                  <MessageCircle className="w-4 h-4" />
+                                  Enquire
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -481,11 +537,13 @@ Please provide more details and availability. Thank you!`;
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
-              <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center mx-auto mb-4">
-                <HelpCircle className="w-8 h-8 text-secondary" />
+              <div className="w-16 h-16 rounded-2xl hero-gradient flex items-center justify-center mx-auto mb-6 shadow-lg glow-primary">
+                <HelpCircle className="w-8 h-8 text-primary-foreground" />
               </div>
-              <h2 className="text-3xl font-bold text-card-foreground mb-4">Frequently Asked Questions</h2>
-              <p className="text-muted-foreground">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-muted-foreground text-lg">
                 Find answers to common questions about our products and services.
               </p>
             </div>
@@ -495,12 +553,12 @@ Please provide more details and availability. Thank you!`;
                 <AccordionItem 
                   key={index} 
                   value={`faq-${index}`}
-                  className="bg-background border border-border rounded-xl px-6 data-[state=open]:shadow-soft"
+                  className="glass-card rounded-2xl px-6 data-[state=open]:shadow-elevated data-[state=open]:border-primary/20 transition-all duration-300"
                 >
-                  <AccordionTrigger className="text-left font-medium text-foreground hover:no-underline py-5">
+                  <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-5 hover:text-primary transition-colors">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-5">
+                  <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -511,22 +569,24 @@ Please provide more details and availability. Thank you!`;
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-muted">
+      <section className="py-20 mesh-gradient">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4 text-foreground">Need Help Choosing?</h2>
-            <p className="text-muted-foreground mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Need Help Choosing?</h2>
+            <p className="text-muted-foreground text-lg mb-8">
               Our experts can help you find the perfect AC unit for your space and budget.
               Get a free consultation today!
             </p>
             <a href="tel:+923412359702">
-              <Button size="lg" className="cta-gradient text-accent-foreground">
+              <Button size="lg" className="cta-gradient text-accent-foreground px-8 h-14 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 btn-premium">
                 Call for Expert Advice
               </Button>
             </a>
           </div>
         </div>
       </section>
-    </div>;
+    </div>
+  );
 };
+
 export default Products;
