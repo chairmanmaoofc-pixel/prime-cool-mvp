@@ -87,12 +87,12 @@ const Index = () => {
           className="container mx-auto px-4 relative z-10"
         >
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Floating Text Box - Boutique Style */}
+            {/* Floating Text Box - Transparent Glass Style */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7 }}
-              className="bg-white dark:bg-card p-8 md:p-12 border-l-4 border-primary shadow-elevated"
+              className="bg-white/80 dark:bg-black/60 backdrop-blur-md p-8 md:p-12 border-l-4 border-primary shadow-elevated"
             >
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
