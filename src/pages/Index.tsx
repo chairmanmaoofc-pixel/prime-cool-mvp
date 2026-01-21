@@ -86,105 +86,77 @@ const Index = () => {
           style={{ opacity: heroOpacity }}
           className="container mx-auto px-4 relative z-10"
         >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Floating Text Box - Transparent Glass Style */}
+          <div className="max-w-3xl">
+            {/* Text directly on image - no background */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
-              className="bg-white/80 dark:bg-black/60 backdrop-blur-md p-8 md:p-12 border-l-4 border-primary shadow-elevated"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm mb-6"
             >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="inline-flex items-center gap-2 bg-secondary/10 px-4 py-2 rounded-full text-sm mb-6"
-              >
-                <Snowflake className="w-4 h-4 text-secondary" />
-                <span className="text-secondary font-medium">FAST & RELIABLE</span>
-              </motion.div>
-              
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-foreground"
-              >
-                Premium AC
-                <br />
-                <span className="text-primary">Solutions</span>
-              </motion.h1>
-              
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="text-muted-foreground mb-8 text-lg"
-              >
-                Transform your space with our expert AC installation, repair, and maintenance services.
-              </motion.p>
+              <Snowflake className="w-4 h-4 text-secondary" />
+              <span className="text-white font-medium">FAST & RELIABLE</span>
+            </motion.div>
+            
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+            >
+              <span className="text-white">Premium AC</span>
+              <br />
+              <span className="text-primary">Solutions</span>
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-white/90 mb-8 text-lg md:text-xl max-w-xl"
+            >
+              Transform your space with our expert AC installation, repair, and maintenance services.
+            </motion.p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                <Link to="/products">
-                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
-                    Shop now
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </Link>
-              </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="flex flex-wrap gap-4 mb-12"
+            >
+              <Link to="/products">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
+                  Shop now
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <a href="tel:+923412359702">
+                <Button size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2">
+                  <Phone className="w-4 h-4" />
+                  Call Us
+                </Button>
+              </a>
             </motion.div>
 
-            {/* Right side - Feature highlights */}
+            {/* Feature pills */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="hidden lg:block"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="flex flex-wrap gap-3"
             >
-              <div className="grid gap-4">
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
-                    className="flex items-center gap-3 bg-white/90 dark:bg-card/90 backdrop-blur-sm px-5 py-4 rounded-lg shadow-soft"
-                  >
-                    <CheckCircle2 className="w-5 h-5 text-secondary flex-shrink-0" />
-                    <span className="text-foreground font-medium">{feature}</span>
-                  </motion.div>
-                ))}
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
-                className="mt-8 bg-white/90 dark:bg-card/90 backdrop-blur-sm p-6 rounded-lg shadow-soft"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full bg-secondary border-2 border-white flex items-center justify-center text-xs font-semibold text-white">
-                        {String.fromCharCode(64 + i)}
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map(i => (
-                        <Star key={i} className="w-4 h-4 text-primary fill-primary" />
-                      ))}
-                      <span className="ml-2 font-semibold text-foreground">4.8</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">500+ Happy Customers</p>
-                  </div>
-                </div>
-              </motion.div>
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
+                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-white text-sm">{feature}</span>
+                </motion.div>
+              ))}
             </motion.div>
           </div>
         </motion.div>

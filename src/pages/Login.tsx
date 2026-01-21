@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Snowflake, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import logoFullImg from "@/assets/logo-full.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -60,20 +61,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center hero-gradient p-4">
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50" />
-      
+    <div className="min-h-screen flex items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md relative z-10 shadow-elevated animate-fade-up">
         <CardContent className="p-8">
           {/* Logo */}
-          <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-            <div className="w-12 h-12 rounded-xl hero-gradient flex items-center justify-center">
-              <Snowflake className="w-7 h-7 text-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-xl text-foreground leading-tight">Optimus Prime</span>
-              <span className="text-xs text-muted-foreground -mt-0.5">AC Solutions</span>
-            </div>
+          <Link to="/" className="flex items-center justify-center mb-8">
+            <img 
+              src={logoFullImg} 
+              alt="Optimus General" 
+              className="h-32 w-auto object-contain"
+            />
           </Link>
 
           <div className="text-center mb-8">
@@ -94,7 +91,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full pl-11 pr-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full pl-11 pr-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={loading}
                 />
               </div>
@@ -112,7 +109,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full pl-11 pr-12 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full pl-11 pr-12 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={loading}
                 />
                 <button
@@ -128,7 +125,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full cta-gradient text-accent-foreground hover:opacity-90"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={loading}
             >
               {loading ? (
@@ -145,7 +142,7 @@ const Login = () => {
           <div className="mt-6 text-center">
             <p className="text-muted-foreground text-sm">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-secondary font-medium hover:underline">
+              <Link to="/signup" className="text-primary font-medium hover:underline">
                 Sign up
               </Link>
             </p>
