@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Snowflake, LogOut, ShoppingCart, User as UserIcon } from "lucide-react";
+import { Menu, X, LogOut, ShoppingCart, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { ThemeToggle } from "./ThemeToggle";
+import logoImg from "@/assets/logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,18 +62,12 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-lg hero-gradient flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Snowflake className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-lg text-foreground leading-tight">
-                Optimus Prime
-              </span>
-              <span className="text-xs text-muted-foreground -mt-0.5">
-                AC Solutions
-              </span>
-            </div>
+          <Link to="/" className="flex items-center gap-3 group">
+            <img 
+              src={logoImg} 
+              alt="Optimus General" 
+              className="h-14 w-auto object-contain group-hover:scale-105 transition-transform"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -89,7 +84,7 @@ const Navbar = () => {
               >
                 {link.label}
                 {isActive(link.path) && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
                 )}
               </Link>
             ))}
@@ -129,7 +124,7 @@ const Navbar = () => {
                   </Button>
                 </Link>
                 <Link to="/signup">
-                  <Button size="sm" className="cta-gradient text-accent-foreground hover:opacity-90">
+                  <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                     Sign Up
                   </Button>
                 </Link>
@@ -200,7 +195,7 @@ const Navbar = () => {
                       </Button>
                     </Link>
                     <Link to="/signup" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full cta-gradient text-accent-foreground">
+                      <Button className="w-full bg-primary text-primary-foreground">
                         Sign Up
                       </Button>
                     </Link>
