@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import logoFullImg from "@/assets/logo-full.png";
+import logoFullImg from "@/assets/logo-full.webp";
 
 const Login = () => {
   const [email, setEmail] = useState("");

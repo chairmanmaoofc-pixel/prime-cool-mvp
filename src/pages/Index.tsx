@@ -5,9 +5,9 @@ import { Wrench, Clock, Shield, Star, ArrowRight, CheckCircle2, Phone, Zap, Ther
 import { FadeIn, ScaleIn, StaggerContainer, StaggerItem, Parallax, Floating, HoverScale, SlideIn } from "@/components/ScrollAnimations";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import familyComfortImg from "@/assets/family-comfort.png";
-import expertInstallationImg from "@/assets/expert-installation.png";
-import heroBackgroundImg from "@/assets/hero-background.png";
+import familyComfortImg from "@/assets/family-comfort.webp";
+import expertInstallationImg from "@/assets/expert-installation.webp";
+import heroBackgroundImg from "@/assets/hero-background.webp";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { ThemeToggle } from "./ThemeToggle";
-import logoImg from "@/assets/logo.png";
+import logoImg from "@/assets/logo.webp";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);

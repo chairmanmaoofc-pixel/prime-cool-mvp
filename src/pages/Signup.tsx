@@ -6,7 +6,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
-import logoFullImg from "@/assets/logo-full.png";
+import logoFullImg from "@/assets/logo-full.webp";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
