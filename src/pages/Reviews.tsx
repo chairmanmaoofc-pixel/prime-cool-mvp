@@ -84,8 +84,7 @@ const Reviews = () => {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 hero-gradient opacity-90" />
+      <section className="relative pt-32 pb-20 overflow-hidden bg-muted">
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
