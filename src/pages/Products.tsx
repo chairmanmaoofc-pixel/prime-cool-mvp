@@ -265,11 +265,11 @@ Please provide more details and availability. Thank you!`;
       <section className="py-20 bg-muted relative overflow-hidden">
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-up">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-up text-gradient">
               Our Products
             </h1>
-            <p style={{ animationDelay: "100ms" }} className="text-lg md:text-xl animate-fade-up opacity-90">
+            <p style={{ animationDelay: "100ms" }} className="text-lg md:text-xl animate-fade-up text-muted-foreground">
               Discover our range of premium air conditioning units from top brands.
               Quality cooling solutions for every budget.
             </p>
